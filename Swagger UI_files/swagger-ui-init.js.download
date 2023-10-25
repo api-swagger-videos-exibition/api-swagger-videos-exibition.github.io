@@ -1,0 +1,157 @@
+
+window.onload = function() {
+  // Build a system
+  var url = window.location.search.match(/url=([^&]+)/);
+  if (url && url.length > 1) {
+    url = decodeURIComponent(url[1]);
+  } else {
+    url = window.location.origin;
+  }
+  var options = {
+  "swaggerDoc": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API de Vídeos de Desenhos e Séries Animadas",
+      "version": "1.0.0",
+      "description": "Uma API para acessar vídeos condinzentes ao cotidiano da vida de uma criança, principalmente com sua família e amigos. Os vídeos possuem diferentes dificuldades, conforme a criança progride no jogo."
+    },
+    "paths": {
+      "/easy-videos": {
+        "get": {
+          "tags": [
+            "Vídeos de Nível Fácil - pontuação menor que 20 pontos"
+          ],
+          "summary": "Obtém um vídeo aleatório fácil",
+          "responses": {
+            "200": {
+              "description": "Vídeo fácil obtido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "video": {
+                        "type": "string",
+                        "description": "URL do vídeo fácil"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar vídeo fácil"
+            }
+          }
+        }
+      },
+      "/medium-videos": {
+        "get": {
+          "tags": [
+            "Vídeos de Nível Médio - pontuação menor que 60 pontos"
+          ],
+          "summary": "Obtém um vídeo aleatório médio",
+          "responses": {
+            "200": {
+              "description": "Vídeo médio obtido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "video": {
+                        "type": "string",
+                        "description": "URL do vídeo médio"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar vídeo médio"
+            }
+          }
+        }
+      },
+      "/difficult-videos": {
+        "get": {
+          "tags": [
+            "Vídeos de Nível Difícil - pontuação a partir de 60 pontos"
+          ],
+          "summary": "Obtém um vídeo aleatório difícil",
+          "responses": {
+            "200": {
+              "description": "Vídeo difícil obtido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "video": {
+                        "type": "string",
+                        "description": "URL do vídeo difícil"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar vídeo difícil"
+            }
+          }
+        }
+      }
+    },
+    "components": {},
+    "tags": []
+  },
+  "customOptions": {}
+};
+  url = options.swaggerUrl || url
+  var urls = options.swaggerUrls
+  var customOptions = options.customOptions
+  var spec1 = options.swaggerDoc
+  var swaggerOptions = {
+    spec: spec1,
+    url: url,
+    urls: urls,
+    dom_id: '#swagger-ui',
+    deepLinking: true,
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+    layout: "StandaloneLayout"
+  }
+  for (var attrname in customOptions) {
+    swaggerOptions[attrname] = customOptions[attrname];
+  }
+  var ui = SwaggerUIBundle(swaggerOptions)
+
+  if (customOptions.oauth) {
+    ui.initOAuth(customOptions.oauth)
+  }
+
+  if (customOptions.preauthorizeApiKey) {
+    const key = customOptions.preauthorizeApiKey.authDefinitionKey;
+    const value = customOptions.preauthorizeApiKey.apiKeyValue;
+    if (!!key && !!value) {
+      const pid = setInterval(() => {
+        const authorized = ui.preauthorizeApiKey(key, value);
+        if(!!authorized) clearInterval(pid);
+      }, 500)
+
+    }
+  }
+
+  if (customOptions.authAction) {
+    ui.authActions.authorize(customOptions.authAction)
+  }
+
+  window.ui = ui
+}
