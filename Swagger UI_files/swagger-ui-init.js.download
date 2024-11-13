@@ -11,12 +11,544 @@ window.onload = function() {
   "swaggerDoc": {
     "openapi": "3.0.0",
     "info": {
-      "title": "API de Vídeos de Desenhos e Séries Animadas",
+      "title": "API Kidtoons",
       "version": "1.0.0",
-      "description": "Uma API para acessar vídeos condinzentes ao cotidiano da vida de uma criança, principalmente com sua família e amigos. Os vídeos possuem diferentes dificuldades, conforme a criança progride no jogo."
+      "description": "Serviços de Jogo Interativo para o Desenvolvimento Moral Infantil"
     },
+    "servers": [
+      {
+        "url": "http://localhost:5000"
+      },
+      {
+        "url": "https://kidtoons-server.vercel.app"
+      }
+    ],
     "paths": {
-      "/easy-videos": {
+      "/accessibility/define": {
+        "post": {
+          "tags": [
+            "Acessibilidade"
+          ],
+          "summary": "Define o nível de leitura de uma criança",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "canRead": {
+                      "type": "boolean"
+                    },
+                    "readsWithDifficulty": {
+                      "type": "boolean"
+                    },
+                    "cannotRead": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Nível de acessibilidade definido com sucesso"
+            },
+            "400": {
+              "description": "Erro de validação, mais de um nível foi enviado como true"
+            },
+            "404": {
+              "description": "Usuário não encontrado"
+            },
+            "500": {
+              "description": "Erro ao definir nível de acessibilidade"
+            }
+          }
+        }
+      },
+      "/auth/signup": {
+        "post": {
+          "tags": [
+            "Autenticação"
+          ],
+          "summary": "Cadastro de novo usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "exemplo@dominio.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "SenhaSegura123"
+                    },
+                    "confirmPassword": {
+                      "type": "string",
+                      "example": "SenhaSegura123"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Joãozinho"
+                    },
+                    "age": {
+                      "type": "integer",
+                      "example": 5
+                    },
+                    "gender": {
+                      "type": "string",
+                      "enum": [
+                        "masculino",
+                        "feminino"
+                      ],
+                      "example": "masculino"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Usuário cadastrado com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "description": "ID do usuário recém-criado"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Dados inválidos"
+            }
+          }
+        }
+      },
+      "/auth/login": {
+        "post": {
+          "tags": [
+            "Autenticação"
+          ],
+          "summary": "Login de usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "exemplo@dominio.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "SenhaSegura123"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Joãozinho"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login bem-sucedido",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "description": "Token de autenticação"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Dados inválidos"
+            },
+            "401": {
+              "description": "Credenciais incorretas"
+            }
+          }
+        }
+      },
+      "/auth/verify-token": {
+        "post": {
+          "tags": [
+            "Autenticação"
+          ],
+          "summary": "Verificação do token de autenticação",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Token válido",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "user": {
+                        "type": "object",
+                        "description": "Dados do usuário autenticado"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Token inválido ou expirado"
+            }
+          }
+        }
+      },
+      "/game/configure-duration": {
+        "post": {
+          "tags": [
+            "Tempo do Jogo"
+          ],
+          "summary": "Configura a duração do jogo",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "duration": {
+                      "type": "number",
+                      "description": "Duração do jogo em minutos (mínimo 10, máximo 180)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Duração do jogo configurada com sucesso"
+            },
+            "400": {
+              "description": "Duração inválida"
+            },
+            "401": {
+              "description": "Não autorizado"
+            },
+            "500": {
+              "description": "Erro ao configurar a duração do jogo"
+            }
+          }
+        }
+      },
+      "/game/remaining-time": {
+        "get": {
+          "tags": [
+            "Tempo do Jogo"
+          ],
+          "summary": "Recupera o tempo restante do jogo para o usuário",
+          "responses": {
+            "200": {
+              "description": "Tempo restante do jogo recuperado com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "remainingTime": {
+                        "type": "string",
+                        "description": "Tempo restante em minutos"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Não autorizado"
+            },
+            "404": {
+              "description": "Duração do jogo não definida"
+            },
+            "500": {
+              "description": "Erro para recuperar o tempo restante do jogo"
+            }
+          }
+        }
+      },
+      "/game/submit-answer": {
+        "post": {
+          "tags": [
+            "Pontuação do Jogo"
+          ],
+          "summary": "Submete uma resposta e atualiza a pontuação do usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "answer": {
+                      "type": "string",
+                      "description": "Resposta do usuário"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Título do vídeo associado à pergunta"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Pontuação atualizada com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "score": {
+                        "type": "integer",
+                        "description": "Pontuação atualizada do usuário"
+                      },
+                      "responsePhrase": {
+                        "type": "string",
+                        "description": "Frase associada à resposta"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Resposta inválida"
+            },
+            "401": {
+              "description": "Não autorizado"
+            },
+            "404": {
+              "description": "Vídeo ou usuário não encontrado"
+            },
+            "500": {
+              "description": "Erro ao atualizar a pontuação"
+            }
+          }
+        }
+      },
+      "/icons/generate/male": {
+        "get": {
+          "tags": [
+            "Ícones - Masculino"
+          ],
+          "summary": "Obtém um ícone aleatório do gênero masculino",
+          "responses": {
+            "200": {
+              "description": "Ícone masculino obtido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "icon": {
+                        "type": "string",
+                        "description": "URL do ícone masculino"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar ícone masculino"
+            }
+          }
+        }
+      },
+      "/icons/generate/female": {
+        "get": {
+          "tags": [
+            "Ícones - Feminino"
+          ],
+          "summary": "Obtém um ícone aleatório do gênero feminino",
+          "responses": {
+            "200": {
+              "description": "Ícone feminino obtido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "icon": {
+                        "type": "string",
+                        "description": "URL do ícone feminino"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar ícone feminino"
+            }
+          }
+        }
+      },
+      "/icons/list/male": {
+        "get": {
+          "tags": [
+            "Ícones - Masculino"
+          ],
+          "summary": "Lista todos os ícones desbloqueados do gênero masculino",
+          "responses": {
+            "200": {
+              "description": "Lista de ícones masculinos obtida com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "URL do ícone masculino"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar ícones masculinos"
+            }
+          }
+        }
+      },
+      "/icons/list/female": {
+        "get": {
+          "tags": [
+            "Ícones - Feminino"
+          ],
+          "summary": "Lista todos os ícones desbloqueados do gênero feminino",
+          "responses": {
+            "200": {
+              "description": "Lista de ícones femininos obtida com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "URL do ícone feminino"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar ícones femininos"
+            }
+          }
+        }
+      },
+      "/icons/in-use": {
+        "get": {
+          "tags": [
+            "Ícones - Em Uso"
+          ],
+          "summary": "Obtém o ícone atualmente em uso pelo usuário",
+          "responses": {
+            "200": {
+              "description": "Ícone atualmente em uso obtido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "icon": {
+                        "type": "string",
+                        "description": "URL do ícone em uso"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Nenhum ícone desbloqueado encontrado"
+            },
+            "500": {
+              "description": "Erro ao obter o ícone em uso"
+            }
+          }
+        }
+      },
+      "/icons/define-use": {
+        "post": {
+          "tags": [
+            "Ícones - Em Uso"
+          ],
+          "summary": "Define o ícone em uso pelo usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "URL do ícone que deseja definir como \"em uso\""
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Ícone atualizado com sucesso"
+            },
+            "400": {
+              "description": "Ícone não desbloqueado"
+            },
+            "500": {
+              "description": "Erro ao definir o ícone em uso"
+            }
+          }
+        }
+      },
+      "/videos/easy": {
         "get": {
           "tags": [
             "Vídeos de Nível Fácil - pontuação menor que 20 pontos"
@@ -32,7 +564,7 @@ window.onload = function() {
                     "properties": {
                       "video": {
                         "type": "string",
-                        "description": "URL do vídeo fácil"
+                        "description": "título do vídeo fácil"
                       }
                     }
                   }
@@ -45,7 +577,7 @@ window.onload = function() {
           }
         }
       },
-      "/medium-videos": {
+      "/videos/medium": {
         "get": {
           "tags": [
             "Vídeos de Nível Médio - pontuação menor que 60 pontos"
@@ -61,7 +593,7 @@ window.onload = function() {
                     "properties": {
                       "video": {
                         "type": "string",
-                        "description": "URL do vídeo médio"
+                        "description": "título do vídeo médio"
                       }
                     }
                   }
@@ -74,7 +606,7 @@ window.onload = function() {
           }
         }
       },
-      "/difficult-videos": {
+      "/videos/difficult": {
         "get": {
           "tags": [
             "Vídeos de Nível Difícil - pontuação a partir de 60 pontos"
@@ -90,7 +622,7 @@ window.onload = function() {
                     "properties": {
                       "video": {
                         "type": "string",
-                        "description": "URL do vídeo difícil"
+                        "description": "título do vídeo difícil"
                       }
                     }
                   }
