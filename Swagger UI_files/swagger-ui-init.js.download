@@ -67,6 +67,43 @@ window.onload = function() {
           }
         }
       },
+      "/accessibility/status": {
+        "get": {
+          "tags": [
+            "Acessibilidade"
+          ],
+          "summary": "Retorna o nível de leitura definido para uma criança",
+          "responses": {
+            "200": {
+              "description": "Nível de acessibilidade retornado com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "level": {
+                        "type": "string",
+                        "description": "O nível de leitura definido",
+                        "enum": [
+                          "canRead",
+                          "readsWithDifficulty",
+                          "cannotRead"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Usuário não encontrado"
+            },
+            "500": {
+              "description": "Erro ao buscar nível de acessibilidade"
+            }
+          }
+        }
+      },
       "/auth/signup": {
         "post": {
           "tags": [
@@ -228,6 +265,43 @@ window.onload = function() {
           }
         }
       },
+      "/auth/reset": {
+        "post": {
+          "tags": [
+            "Usuário"
+          ],
+          "summary": "Resetar os dados do usuário",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Dados do usuário resetados com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Dados do usuário resetados com sucesso."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Token inválido ou não autorizado"
+            },
+            "500": {
+              "description": "Erro ao processar a solicitação"
+            }
+          }
+        }
+      },
       "/game/configure-duration": {
         "post": {
           "tags": [
@@ -369,6 +443,123 @@ window.onload = function() {
           }
         }
       },
+      "/game/score": {
+        "get": {
+          "tags": [
+            "Pontuação do Jogo"
+          ],
+          "summary": "Recupera a pontuação do usuário",
+          "responses": {
+            "200": {
+              "description": "Pontuação recuperada com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "score": {
+                        "type": "integer",
+                        "description": "Pontuação atual do usuário"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Não autorizado"
+            },
+            "404": {
+              "description": "Usuário não encontrado"
+            },
+            "500": {
+              "description": "Erro ao recuperar a pontuação"
+            }
+          }
+        }
+      },
+      "/game/statistics-by-level": {
+        "get": {
+          "tags": [
+            "Pontuação do Jogo"
+          ],
+          "summary": "Recupera o número de acertos e erros do usuário por nível de dificuldade",
+          "responses": {
+            "200": {
+              "description": "Dados de acertos e erros recuperados com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": "Mensagem de sucesso"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "easy": {
+                            "type": "object",
+                            "properties": {
+                              "correct": {
+                                "type": "integer",
+                                "description": "Número de acertos no nível fácil"
+                              },
+                              "incorrect": {
+                                "type": "integer",
+                                "description": "Número de erros no nível fácil"
+                              }
+                            }
+                          },
+                          "medium": {
+                            "type": "object",
+                            "properties": {
+                              "correct": {
+                                "type": "integer",
+                                "description": "Número de acertos no nível médio"
+                              },
+                              "incorrect": {
+                                "type": "integer",
+                                "description": "Número de erros no nível médio"
+                              }
+                            }
+                          },
+                          "difficult": {
+                            "type": "object",
+                            "properties": {
+                              "correct": {
+                                "type": "integer",
+                                "description": "Número de acertos no nível difícil"
+                              },
+                              "incorrect": {
+                                "type": "integer",
+                                "description": "Número de erros no nível difícil"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Não autorizado"
+            },
+            "404": {
+              "description": "Usuário ou respostas não encontradas"
+            },
+            "500": {
+              "description": "Erro ao recuperar os dados de acertos e erros"
+            }
+          }
+        }
+      },
       "/icons/generate/male": {
         "get": {
           "tags": [
@@ -432,17 +623,26 @@ window.onload = function() {
           "tags": [
             "Ícones - Masculino"
           ],
-          "summary": "Lista todos os ícones desbloqueados do gênero masculino",
+          "summary": "Lista todos os ícones desbloqueados do gênero masculino e o número total desbloqueado",
           "responses": {
             "200": {
               "description": "Lista de ícones masculinos obtida com sucesso",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "description": "URL do ícone masculino"
+                    "type": "object",
+                    "properties": {
+                      "icons": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "URL do ícone masculino"
+                        }
+                      },
+                      "unlockedCount": {
+                        "type": "integer",
+                        "description": "Número de ícones desbloqueados"
+                      }
                     }
                   }
                 }
@@ -459,17 +659,26 @@ window.onload = function() {
           "tags": [
             "Ícones - Feminino"
           ],
-          "summary": "Lista todos os ícones desbloqueados do gênero feminino",
+          "summary": "Lista todos os ícones desbloqueados do gênero feminino e o número total desbloqueado",
           "responses": {
             "200": {
               "description": "Lista de ícones femininos obtida com sucesso",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "description": "URL do ícone feminino"
+                    "type": "object",
+                    "properties": {
+                      "icons": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "URL do ícone feminino"
+                        }
+                      },
+                      "unlockedCount": {
+                        "type": "integer",
+                        "description": "Número de ícones desbloqueados"
+                      }
                     }
                   }
                 }
@@ -631,6 +840,77 @@ window.onload = function() {
             },
             "500": {
               "description": "Erro ao buscar vídeo difícil"
+            }
+          }
+        }
+      },
+      "/videos/last": {
+        "get": {
+          "tags": [
+            "Vídeos"
+          ],
+          "summary": "Obtém o último vídeo gerado para o usuário",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Último vídeo recuperado com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "video": {
+                        "type": "string",
+                        "example": "Título do Último Vídeo"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Nenhum vídeo encontrado para este usuário"
+            },
+            "500": {
+              "description": "Erro ao recuperar o último vídeo"
+            }
+          }
+        }
+      },
+      "/videos/reset-last": {
+        "post": {
+          "tags": [
+            "Vídeos"
+          ],
+          "summary": "Redefine o último vídeo gerado para o usuário",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Último vídeo redefinido com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Último vídeo redefinido com sucesso."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao redefinir o último vídeo"
             }
           }
         }
